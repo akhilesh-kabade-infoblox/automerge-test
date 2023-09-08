@@ -6,6 +6,9 @@ on:
     # You can setup schedule here
     - cron: '30 2 * * *'
 
+permissions:
+  contents: write
+
 env:
   # replace "github_username" with your GitHub username
   # replace "github.com/username/repo.git" with your GitHub repo path

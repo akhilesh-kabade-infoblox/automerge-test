@@ -16,7 +16,7 @@ env:
   MY_BRANCH: feature-develop
 
   # replace it with the path to master repo
-  MASTER_REPO: ssh://git@github.com/akhilesh-kabade-infoblox/automerge-test.git
+  MASTER_REPO: https://github.com/akhilesh-kabade-infoblox/automerge-test.git
   
   # replace "master" with your master branch name
   MASTER_BRANCH: main

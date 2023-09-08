@@ -1,7 +1,9 @@
 name: Automerge
 
 on:
-  workflow_dispatch:
+  push:
+   branches:
+     - main
   schedule:
     # You can setup schedule here
     - cron: '30 2 * * *'

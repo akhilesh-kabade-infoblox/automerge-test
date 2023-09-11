@@ -51,6 +51,8 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+  repository-projects: write
 
 jobs:
   merge-and-notify:

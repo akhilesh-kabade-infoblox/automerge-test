@@ -77,13 +77,15 @@ jobs:
             echo "CONFLICT_MESSAGE=$(cat conflict_message.txt)" >> env.properties
             echo "CONFLICT_AUTHOR=$commit_author" >> env.properties
           fi
-      - uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow # selectable (default: repo,message)
+          
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@master
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-        if: always() # Pick up events even if the job fails or is canceled.
+          SLACK_CHANNEL: YOUR_SLACK_CHANNEL_NAME
+          SLACK_MESSAGE: 'Please review on https://github.com/YOUR_PATH/YOUR_REPO_NAME/pull/${{ env.pull_number}}'
+          SLACK_TITLE: 'Pull request'
+          SLACK_USERNAME: 'Gittan'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           
       - name: Set environment variables
         if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'

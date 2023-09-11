@@ -47,7 +47,7 @@ name: Merge feature-develop into main and Notify Authors
 on:
   push:
     branches:
-      - feataure-develop
+      - feature-develop
 
 jobs:
   merge-and-notify:

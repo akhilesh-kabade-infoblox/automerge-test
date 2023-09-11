@@ -78,15 +78,6 @@ jobs:
             echo "CONFLICT_AUTHOR=$commit_author" >> env.properties
           fi
           
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@master
-        env:
-          SLACK_CHANNEL: YOUR_SLACK_CHANNEL_NAME
-          SLACK_MESSAGE: 'Please review on https://github.com/YOUR_PATH/YOUR_REPO_NAME/pull/${{ env.pull_number}}'
-          SLACK_TITLE: 'Pull request'
-          SLACK_USERNAME: 'Gittan'
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-          
       - name: Set environment variables
         if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV

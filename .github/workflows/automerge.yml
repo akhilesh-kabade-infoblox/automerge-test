@@ -137,6 +137,10 @@ jobs:
           FROM_BRANCH: "feature-develop"
           TO_BRANCH: "main"
           REVIEWERS: '["akhilesh-kabade-infoblox"]'
+
+      - uses: actions-ecosystem/action-add-assignees@v1
+        with:
+          github_token: ${{ secrets.github_token }}
           assignees: ${{ github.actor }}
           
       # - name: Create PR

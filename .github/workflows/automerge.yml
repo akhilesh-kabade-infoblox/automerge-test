@@ -136,7 +136,8 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: "feature-develop"
           TO_BRANCH: "main"
-
+          REVIEWERS: '["akhilesh-kabade-infoblox"]'
+          
       # - name: Create PR
       #   if: env.CONFLICT_DETECTED == 'true'
       #   uses: peter-evans/create-pull-request@v3

@@ -48,7 +48,7 @@ name: Merge feature-develop into main and Notify Authors
 on:
   push:
   pull_request:
-    types: [opened, reopened]
+    types: [assigned, unassigned]
     branches:
       - feature-develop
 
@@ -139,10 +139,10 @@ jobs:
           TO_BRANCH: "main"
           REVIEWERS: '["akhilesh-kabade-infoblox"]'
 
-      - uses: actions-ecosystem/action-add-assignees@v1
-        with:
-          github_token: ${{ secrets.github_token }}
-          assignees: ${{ github.actor }}
+      - name: Assignee to Reviewer
+        uses: pullreminders/assignee-to-reviewer-action@v1.0.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
       # - name: Create PR
       #   if: env.CONFLICT_DETECTED == 'true'

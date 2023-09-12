@@ -48,6 +48,7 @@ name: Merge feature-develop into main and Notify Authors
 on:
   push:
   pull_request:
+    types: [opened, reopened]
     branches:
       - feature-develop
 

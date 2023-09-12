@@ -125,10 +125,10 @@ jobs:
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
           # Additional steps to handle conflict resolution, if needed
           
-      - name: Set up Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
+      # - name: Set up Node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 12
       - name: Opening pull request
         id: pull
         uses: tretuna/sync-branches@1.4.0
@@ -136,7 +136,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           FROM_BRANCH: "feature-develop"
           TO_BRANCH: "main"
-          TEAM_REVIEWERS: '["akhilesh-kabade-infoblox","nsomarouthu"]'
+          REVIEWERS: '["akhilesh-kabade-infoblox"]'
 
           
       # - name: Create PR

@@ -137,7 +137,7 @@ jobs:
           FROM_BRANCH: "feature-develop"
           TO_BRANCH: "main"
           REVIEWERS: '["akhilesh-kabade-infoblox"]'
-          assignee: 'akhilesh-kabade-infoblox'
+          assignees: ${{ github.actor }}
           
       # - name: Create PR
       #   if: env.CONFLICT_DETECTED == 'true'

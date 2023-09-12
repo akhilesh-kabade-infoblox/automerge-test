@@ -103,6 +103,12 @@ jobs:
                   issue_number: result.data.number,
                   labels: ['feature', 'automated pr']
                 }); 
+
+      - name: Add Pull Request Reviewer
+        uses: AveryCameronUofR/add-reviewer-gh-action@1.0.3
+        with: 
+            reviewers: "AveryCameronUofR"
+            token: ${{ secrets.GITHUB_TOKEN }}
                 
       - name: Set environment variables
         if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'

@@ -108,8 +108,9 @@ jobs:
                 
       - name: Set environment variables
         id: init
-        if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
-        run: echo "CONFLICT_DETECTED=true" >> $GITHUB_OUTPUT
+        #if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+        run: |
+          echo "CONFLICT_DETECTED=true" >> $GITHUB_OUTPUT
 
   create_pr:
     runs-on: ubuntu-latest

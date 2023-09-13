@@ -58,7 +58,7 @@ jobs:
   merge-and-notify:
     runs-on: ubuntu-latest
     outputs:
-      CONFLICT_DETECTE: ${{ steps.init.outputs.CONFLICT_DETECTED }}
+      CONFLICT_DETECTED: ${{ steps.init.outputs.CONFLICT_DETECTED }}
 
     steps:
       - name: Check out code

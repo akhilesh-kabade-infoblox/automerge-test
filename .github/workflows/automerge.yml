@@ -151,5 +151,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "Automated Weekly PR - Conflict Resolution"
           body: "This PR was automatically generated to resolve a conflict in the 'merge-test' branch."
-          branch: main
-          base: feature-develop
+          branch: feature-develop
+          base: main

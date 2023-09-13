@@ -57,6 +57,8 @@ permissions:
 jobs:
   merge-and-notify:
     runs-on: ubuntu-latest
+    outputs:
+      CONFLICT_DETECTE: ${{ steps.init.outputs.CONFLICT_DETECTED }}
 
     steps:
       - name: Check out code
@@ -105,26 +107,27 @@ jobs:
       #           }); 
                 
       - name: Set environment variables
+        id: init
         if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: echo "CONFLICT_DETECTED=true" >> $GITHUB_OUTPUT
 
   create_pr:
     runs-on: ubuntu-latest
     needs: merge-and-notify
-    if: env.CONFLICT_DETECTED == 'true'
+    if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
       - name: Display Conflict Message
-        if: env.CONFLICT_DETECTED == 'true'
+        # if: env.CONFLICT_DETECTED == 'true'
         run: |
           echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
           # Additional steps to handle conflict resolution, if needed
       - name: Create PR
-        if: env.CONFLICT_DETECTED == 'true'
+        # if: env.CONFLICT_DETECTED == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

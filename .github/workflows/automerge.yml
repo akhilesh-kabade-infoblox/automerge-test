@@ -119,8 +119,8 @@ jobs:
     #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      # - name: Checkout Repository
+      #   uses: actions/checkout@v2
 
       - name: Display Conflict Message
         #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
@@ -128,15 +128,32 @@ jobs:
           echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
           # Additional steps to handle conflict resolution, if needed
-      - name: Create PR
-        #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
-        uses: peter-evans/create-pull-request@v3
+
+      - name: git checkout
+        uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Automated Weekly PR - Conflict Resolution"
-          body: "This PR was automatically generated to resolve a conflict in the 'merge-test' branch."
-          branch: main
-          base: feature-develop
+          token: ${{secrets.GITHUB_TOKEN}}
+
+      # https://github.com/marketplace/actions/github-pull-request-action
+      - name: create pull request
+        id: open-pr
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          destination_branch: ${{ github.event.repository.default_branch }}
+          pr_title: "[Automated] Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
+          pr_body: "Automated Pull Request"
+          pr_reviewer: "akhilesh-kabade-infoblox"
+          pr_assignee: "akhilesh-kabade-infoblox"
+      # - name: Create PR
+      #   #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+      #   uses: peter-evans/create-pull-request@v3
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     title: "Automated Weekly PR - Conflict Resolution"
+      #     body: "This PR was automatically generated to resolve a conflict in the 'merge-test' branch."
+      #     branch: main
+      #     base: feature-develop
           
   #     # - name: Set up Node
   #     #   uses: actions/setup-node@v1

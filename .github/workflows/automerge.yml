@@ -109,7 +109,7 @@ jobs:
                 
       - name: Set environment variables
         id: init
-        #if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+        if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
           echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV
 

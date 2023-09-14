@@ -123,13 +123,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Display Conflict Message
-        if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+        #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
           echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
           # Additional steps to handle conflict resolution, if needed
       - name: Create PR
-        if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+        #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

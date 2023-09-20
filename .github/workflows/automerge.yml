@@ -1,4 +1,3 @@
-
 # on:
 #   push:
 #    branches:
@@ -116,7 +115,7 @@ jobs:
   create_pr:
     runs-on: ubuntu-latest
     needs: merge-and-notify
-    if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+    #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
 
     steps:
       - name: Checkout Repository
@@ -128,7 +127,7 @@ jobs:
           token: ${{secrets.GITHUB_TOKEN}}
 
       - name: Display Conflict Message
-        if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+        #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
           echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"

@@ -45,7 +45,7 @@ name: Merge feature-develop into main and Notify Authors
 on:
   push:
   pull_request:
-#     #types: [opened, ready_for_review]
+     #types: [opened, ready_for_review]
     branches:
       - feature-develop
 
@@ -131,7 +131,7 @@ jobs:
         run: |
           echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
-          Additional steps to handle conflict resolution, if needed
+          #Additional steps to handle conflict resolution, if needed
 
       #https://github.com/marketplace/actions/github-pull-request-action
       - name: create pull request

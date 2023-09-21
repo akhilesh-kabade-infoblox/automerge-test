@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      CONFLICT_AUTHOR: ${{ steps.step1.outputs.CONFLICT_AUTHOR }}
+      CONFLICT_AUTHOR: ${{ steps.init.outputs.CONFLICT_AUTHOR }}
 
     steps:
       - name: Check out code
@@ -49,8 +49,8 @@ jobs:
         id: init
         # if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
-          echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV
-          echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_ENV
+          echo "CONFLICT_DETECTED=true" >> $GITHUB_OUTPUT
+          echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_OUTPUT
 
   create_pr:
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
       - name: Display Conflict Message
         #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
-          echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
+          echo "Conflict Detected by: "${{ needs.merge-and-notify.outputs.CONFLICT_AUTHOR }}""
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
 
       #https://github.com/marketplace/actions/github-pull-request-action

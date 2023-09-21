@@ -46,7 +46,7 @@ name: Merge feature-develop into main and Notify Authors
 on:
   push:
   pull_request:
-    #types: [opened, ready_for_review]
+     #types: [opened, ready_for_review]
     branches:
       - feature-develop
 
@@ -122,19 +122,18 @@ jobs:
       # - name: Checkout Repository
       #   uses: actions/checkout@v2
 
-      - name: Display Conflict Message
-        #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
-        run: |
-          echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
-          echo "Message: ${{ env.CONFLICT_MESSAGE }}"
-          # Additional steps to handle conflict resolution, if needed
-
       - name: git checkout
         uses: actions/checkout@v3
         with:
           token: ${{secrets.GITHUB_TOKEN}}
 
-      # https://github.com/marketplace/actions/github-pull-request-action
+      - name: Display Conflict Message
+        #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+        run: |
+          echo "Conflict Detected by: ${{ env.CONFLICT_AUTHOR }}"
+          echo "Message: ${{ env.CONFLICT_MESSAGE }}"
+
+      #https://github.com/marketplace/actions/github-pull-request-action
       - name: create pull request
         id: open-pr
         uses: repo-sync/pull-request@v2
@@ -145,6 +144,7 @@ jobs:
           pr_body: "Automated Pull Request"
           pr_reviewer: "akhilesh-kabade-infoblox"
           pr_assignee: "akhilesh-kabade-infoblox"
+          
       # - name: Create PR
       #   #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
       #   uses: peter-evans/create-pull-request@v3
@@ -174,8 +174,6 @@ jobs:
       #     #reviewers: foo, bar, baz # if draft, assigned when draft is released
           
       
-
-
 
 
 # name: Merge Release Into Main

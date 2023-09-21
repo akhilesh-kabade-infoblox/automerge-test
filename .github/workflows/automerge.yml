@@ -67,8 +67,8 @@ jobs:
 
       - name: Merge feature-develop into main
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "<actions@github.com>"
+          # git config user.name "GitHub Actions"
+          # git config user.email "<actions@github.com>"
           git fetch origin
           git checkout main
           if git merge feature-develop --no-ff --no-edit --allow-unrelated-histories; then

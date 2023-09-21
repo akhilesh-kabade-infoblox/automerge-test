@@ -74,8 +74,8 @@ jobs:
       - name: Check merge result
         run: |
           if [ "${{ steps.merge_result.outcome }}" == "success" ]; then
-            git push origin main
-          else
+          #   git push origin main
+          # else
             # Notify the author of the merge conflict and provide instructions
             commit_author=$(git --no-pager show -s --format='%an' HEAD)
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)

@@ -20,7 +20,8 @@ jobs:
     outputs:
       conflict_detected: ${{ steps.step1.outputs.conflict_detected }}
       conflict_author: ${{ steps.step1.outputs.conflict_author }}
-
+      conflict_messages: ${{ steps.step1.outputs.conflict_messages }}
+      
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -43,7 +44,7 @@ jobs:
             echo "$commit_author"
             echo "Merge conflict detected in the branch 'merge-test'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
             echo "conflict_detected=true" >> $GITHUB_OUTPUT
-            echo "CONFLICT_MESSAGE=$(cat conflict_message.txt)" >> $GITHUB_ENV
+            echo "conflict_messages=$(cat conflict_message.txt)" >> $GITHUB_OUTPUT
             echo "conflict_author=$commit_author" >> $GITHUB_OUTPUT
           fi
                 
@@ -69,7 +70,7 @@ jobs:
         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
         run: |
           echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
-          echo "Message: ${{ env.CONFLICT_MESSAGE }}"
+          echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
 
       #https://github.com/marketplace/actions/github-pull-request-action
       - name: create pull request

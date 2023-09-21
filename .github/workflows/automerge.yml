@@ -73,7 +73,6 @@ jobs:
           git checkout main
           if git merge feature-develop --no-ff --no-edit --allow-unrelated-histories; then
             git push origin main
-          else
             # Notify the author of the merge conflict and provide instructions
             commit_author=$(git --no-pager show -s --format='%an' HEAD)
             echo "$commit_author"

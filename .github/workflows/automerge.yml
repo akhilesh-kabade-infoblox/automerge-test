@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      CONFLICT_AUTHOR: ${{ steps.init.outputs.CONFLICT_AUTHOR }}
+      CONFLICT_AUTHOR: ${{ steps.step1.outputs.CONFLICT_AUTHOR }}
 
     steps:
       - name: Check out code
@@ -40,17 +40,17 @@ jobs:
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
             echo "$commit_author"
             echo "Merge conflict detected in the branch 'merge-test'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
-            echo "CONFLICT_DETECTED=true" >> env.properties
-            echo "CONFLICT_MESSAGE=$(cat conflict_message.txt)" >> env.properties
-            echo "CONFLICT_AUTHOR=$commit_author" >> env.properties
+            echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV
+            echo "CONFLICT_MESSAGE=$(cat conflict_message.txt)" >> $GITHUB_ENV
+            echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_ENV
           fi
                 
       - name: Set environment variables
         id: init
         # if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
-          echo "CONFLICT_DETECTED=true" >> $GITHUB_OUTPUT
-          echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_OUTPUT
+          echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV
+          echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_ENV
 
   create_pr:
     runs-on: ubuntu-latest

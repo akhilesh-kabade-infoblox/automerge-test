@@ -50,6 +50,7 @@ jobs:
         # if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
         run: |
           echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV
+          echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_ENV
 
   create_pr:
     runs-on: ubuntu-latest

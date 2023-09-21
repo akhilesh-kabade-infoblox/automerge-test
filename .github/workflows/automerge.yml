@@ -66,7 +66,7 @@ jobs:
       - name: Display Conflict Message
         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
         run: |
-          echo "Conflict Detected by: ${{ env.conflict_detected }}"
+          echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_detected }}"
           echo "Message: ${{ env.CONFLICT_MESSAGE }}"
 
       #https://github.com/marketplace/actions/github-pull-request-action

@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - feature-develop
+  issues:
   pull_request:
     
 
@@ -85,10 +86,9 @@ jobs:
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 
-      - uses: kentaro-m/auto-assign-action@v1.2.5
+      - uses: wow-actions/auto-assign@v3
         with:
-          #configuration-path: '.github/some_name_for_configs.yml' 
-          github_token: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
           
           

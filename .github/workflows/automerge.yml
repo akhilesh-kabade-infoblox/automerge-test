@@ -2,7 +2,7 @@
 name: Merge feature-develop into main and Notify Authors
 
 on: 
-  push: 
+  #push: 
   pull_request:
     # types: [opened]
     branches:

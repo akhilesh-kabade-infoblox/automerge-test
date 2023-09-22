@@ -4,7 +4,7 @@ name: Merge feature-develop into main and Notify Authors
 on:
   push:
   pull_request:
-     #types: [opened, ready_for_review]
+    types: [opened]
     branches:
       - feature-develop
 
@@ -36,8 +36,8 @@ jobs:
         id: step1
         run: |
           if [ "${{ steps.merge_result.outcome }}" == "success" ]; then
-            git push origin main
-          else
+          #   git push origin main
+          # else
             # Notify the author of the merge conflict and provide instructions
             commit_author=$(git --no-pager show -s --format='%an' HEAD)
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
@@ -83,5 +83,10 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into ${{ github.event.repository.default_branch }}"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          pr_assignee: "${{ env.conflict_author }}"
+          #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+
+      - uses: hkusu/review-assign-action@v1
+        id: assign # specify id
+        with:
+          assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
           

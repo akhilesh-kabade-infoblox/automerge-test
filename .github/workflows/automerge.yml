@@ -85,10 +85,9 @@ jobs:
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 
-      - uses: actions-ecosystem/action-add-assignees@v1
+      - uses: kentaro-m/auto-assign-action@v1.2.5
         with:
-          github_token: ${{ secrets.github_token }}
-          issue_number: ""
+          #configuration-path: '.github/some_name_for_configs.yml' 
           assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
           
           

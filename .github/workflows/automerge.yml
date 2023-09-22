@@ -6,9 +6,6 @@ on:
     branches:
       - feature-develop
   pull_request:
-    types:
-      - opened
-      - reopened
     
 
 permissions:
@@ -90,6 +87,6 @@ jobs:
 
       - uses: actions-ecosystem/action-add-assignees@v1
         with:
-          github_token: ${{ secrets.github_token }}
+          #github_token: ${{ secrets.github_token }}
           assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
           

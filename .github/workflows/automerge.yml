@@ -2,11 +2,14 @@
 name: Merge feature-develop into main and Notify Authors
 
 on: 
-  #push: 
-  pull_request:
-    # types: [opened]
+  push:
     branches:
       - feature-develop
+  pull_request:
+    types:
+      - opened
+      - reopened
+    
 
 permissions:
   contents: write
@@ -85,8 +88,8 @@ jobs:
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 
-      - uses: hkusu/review-assign-action@v1
-        id: assign # specify id
+      - uses: actions-ecosystem/action-add-assignees@v1
         with:
+          github_token: ${{ secrets.github_token }}
           assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
           

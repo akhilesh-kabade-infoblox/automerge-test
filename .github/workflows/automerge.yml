@@ -40,8 +40,7 @@ jobs:
           #   git push origin main
           # else
             # Notify the author of the merge conflict and provide instructions
-            #commit_author=$(git --no-pager show -s --format='%an' HEAD)
-            commit_author=$(git config user.name)
+            commit_author=$(git --no-pager show -s --format='%an' HEAD)
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
             echo "$commit_author"
             echo "Merge conflict detected in the branch 'merge-test'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt

@@ -24,12 +24,8 @@ jobs:
       conflict_messages: ${{ steps.step1.outputs.conflict_messages }}
       
     steps:
-      - uses: actions/checkout@v1
-      - name: Setup git user
-        run: |
-          set -e
-          git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
-          git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+      - name: Check out code
+        uses: actions/checkout@v2
 
       - name: Attempt to merge merge-test into merge-master
         id: merge_result
@@ -45,7 +41,6 @@ jobs:
           # else
             # Notify the author of the merge conflict and provide instructions
             #commit_author=$(git --no-pager show -s --format='%an' HEAD)
-            commit_author=$(git config user.name "$(git --no-pager log --format=format:'%an' -n 1)")
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
             echo "$commit_author"
             echo "Merge conflict detected in the branch 'merge-test'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt

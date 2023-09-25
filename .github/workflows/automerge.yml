@@ -91,5 +91,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
           
-          
-          

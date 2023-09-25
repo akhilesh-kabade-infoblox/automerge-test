@@ -38,25 +38,16 @@ jobs:
           git config user.name "GitHub Action"
           git config user.email "<EMAIL>"
           
-      # - name: Merge the PR
-      #   id: merge-status
-      #   continue-on-error: true
-      #   run: |
-      #       git checkout main
-      #       git fetch origin
-      #       git checkout feature-develop
-      #       git pull
-      #       git merge --allow-unrelated-histories origin/main
-      #       git push origin feature-develop
-
       - name: Merge the PR
         id: merge-status
         continue-on-error: true
-        uses: tretuna/sync-branches@1.4.0
-        with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          FROM_BRANCH: "main"
-          TO_BRANCH: "feature-develop"
+        run: |
+            git checkout main
+            git fetch origin
+            git checkout feature-develop
+            git pull
+            git merge --allow-unrelated-histories origin/main
+            git push origin feature-develop
           
       - name: Check merge result
         id: step1

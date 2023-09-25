@@ -50,8 +50,8 @@ jobs:
           
       - name: Check merge result
         id: step1
+        if: steps.merge-status.outcome == 'failure'
         run: |
-          if: steps.merge-status.outcome == 'failure'
           # continue-on-error: true
           #   git push origin main
           # else
@@ -63,7 +63,7 @@ jobs:
             echo "conflict_detected=true" >> $GITHUB_OUTPUT
             echo "conflict_messages=$(cat conflict_message.txt)" >> $GITHUB_OUTPUT
             echo "conflict_author=$commit_author" >> $GITHUB_OUTPUT
-          fi
+          #fi
                 
       # - name: Set environment variables
       #   id: init

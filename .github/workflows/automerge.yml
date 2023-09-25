@@ -42,8 +42,8 @@ jobs:
           HEAD_BRANCH: ${{ fromJson(steps.get-pr-details.outputs.data).head.ref }}
         run: |
           if [ "$MERGEABLE_STATUS" = "clean" ]; then
-            git config --global user.email "<>"
-            git config --global user.name "GitHub Actions"
+            # git config --global user.email "<>"
+            # git config --global user.name "GitHub Actions"
             git checkout $HEAD_BRANCH
             git pull origin $HEAD_BRANCH
             git checkout $BASE_BRANCH

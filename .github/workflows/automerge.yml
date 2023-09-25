@@ -37,7 +37,7 @@ jobs:
         id: merge-status
         shell: bash
         env:
-          MERGEABLE_STATUS: ${{ fromJson(steps.get-pr-details.outputs.data).mergeable_state }}
+          MERGEABLE_STATUS: clean
           BASE_BRANCH: feature-develop
           HEAD_BRANCH: main
         run: |

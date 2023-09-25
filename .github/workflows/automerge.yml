@@ -27,16 +27,38 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Attempt to merge merge-test into merge-master
-        id: merge_result
-        run: |
-          set -e
-          git merge feature-develop --no-ff --no-edit --allow-unrelated-histories || echo "Merge failed"
+      # - name: Attempt to merge merge-test into merge-master
+      #   id: merge_result
+      #   run: |
+      #     set -e
+      #     git merge feature-develop --no-ff --no-edit --allow-unrelated-histories || echo "Merge failed"
 
+      - name: Merge the PR
+        id: merge-status
+        shell: bash
+        env:
+          MERGEABLE_STATUS: ${{ fromJson(steps.get-pr-details.outputs.data).mergeable_state }}
+          BASE_BRANCH: ${{ fromJson(steps.get-pr-details.outputs.data).base.ref }}
+          HEAD_BRANCH: ${{ fromJson(steps.get-pr-details.outputs.data).head.ref }}
+        run: |
+          if [ "$MERGEABLE_STATUS" = "clean" ]; then
+            git config --global user.email "<>"
+            git config --global user.name "GitHub Actions"
+            git checkout $HEAD_BRANCH
+            git pull origin $HEAD_BRANCH
+            git checkout $BASE_BRANCH
+            git pull origin $BASE_BRANCH
+            git rebase $HEAD_BRANCH
+            git push origin $BASE_BRANCH
+            echo "::set-output name=message::'PR merged in succesfully.'"
+          else
+            echo "::set-output name=message::'PR cannot be merged in.'"
+          fi
+          
       - name: Check merge result
         id: step1
         run: |
-          if [ "${{ steps.merge_result.outcome }}" == "success" ]; then
+          if [ "${{ steps.merge-status.outcome }}" == "success" ]; then
           #   git push origin main
           # else
             # Notify the author of the merge conflict and provide instructions

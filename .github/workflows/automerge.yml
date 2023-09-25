@@ -38,12 +38,12 @@ jobs:
         shell: bash
         env:
           MERGEABLE_STATUS: ${{ fromJson(steps.get-pr-details.outputs.data).mergeable_state }}
-          BASE_BRANCH: ${{ fromJson(steps.get-pr-details.outputs.data).base.ref }}
-          HEAD_BRANCH: ${{ fromJson(steps.get-pr-details.outputs.data).head.ref }}
+          BASE_BRANCH: feature-develop
+          HEAD_BRANCH: main
         run: |
           if [ "$MERGEABLE_STATUS" = "clean" ]; then
-            # git config --global user.email "<>"
-            # git config --global user.name "GitHub Actions"
+            git config --global user.email "<>"
+            git config --global user.name "GitHub Actions"
             git checkout $HEAD_BRANCH
             git pull origin $HEAD_BRANCH
             git checkout $BASE_BRANCH

@@ -36,24 +36,13 @@ jobs:
       - name: Merge the PR
         id: merge-status
         shell: bash
-        env:
-          MERGEABLE_STATUS: clean
-          BASE_BRANCH: feature-develop
-          HEAD_BRANCH: main
         run: |
-          if [ "$MERGEABLE_STATUS" = "clean" ]; then
-            git config --global user.email "<>"
-            git config --global user.name "GitHub Actions"
-            git checkout $HEAD_BRANCH
-            git pull origin $HEAD_BRANCH
-            git checkout $BASE_BRANCH
-            git pull origin $BASE_BRANCH
-            git rebase $HEAD_BRANCH
-            git push origin $BASE_BRANCH
-            echo "::set-output name=message::'PR merged in succesfully.'"
-          else
-            echo "::set-output name=message::'PR cannot be merged in.'"
-          fi
+            git checkout feature-develop
+            git fetch origin
+            git checkout main
+            git pull
+            git merge --allow-unrelated-histories origin/feature-develop
+            git push origin main
           
       - name: Check merge result
         id: step1

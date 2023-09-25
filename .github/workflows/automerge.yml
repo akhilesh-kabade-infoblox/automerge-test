@@ -40,7 +40,7 @@ jobs:
           
       - name: Merge the PR
         id: merge-status
-        continue-on-error: true
+        #continue-on-error: true
         run: |
             git checkout main
             git fetch origin

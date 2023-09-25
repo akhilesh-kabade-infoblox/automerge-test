@@ -39,7 +39,6 @@ jobs:
           
       - name: Merge the PR
         id: merge-status
-        shell: bash
         run: |
             git checkout main
             git fetch origin
@@ -51,7 +50,7 @@ jobs:
       - name: Check merge result
         id: step1
         run: |
-          if [ "${{ steps.merge-status.outcome }}" == "failed" ]; then
+          if: failure() && steps.merge-status.outcome != 'success'
           #   git push origin main
           # else
             # Notify the author of the merge conflict and provide instructions

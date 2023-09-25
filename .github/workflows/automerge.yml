@@ -93,8 +93,8 @@ jobs:
           title: "Merge main into feature-develop branch"
           body: "**Automated pull request**"
           assignee: ${{ needs.merge-and-notify.outputs.conflict_author }}
-          source_branch: feature-develop
-          target_branch: main
+          source_branch: main
+          target_branch: feature-develop
 
       #https://github.com/marketplace/actions/github-pull-request-action
       # - name: create pull request

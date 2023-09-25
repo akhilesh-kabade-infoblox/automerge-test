@@ -21,6 +21,7 @@ jobs:
     outputs:
       conflict_detected: ${{ steps.step1.outputs.conflict_detected }}
       conflict_author: ${{ steps.step1.outputs.conflict_author }}
+      conflict_email: ${{ steps.step1.outputs.conflict_email }}
       conflict_messages: ${{ steps.step1.outputs.conflict_messages }}
       
     steps:
@@ -57,6 +58,7 @@ jobs:
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
             echo "$commit_author"
             echo "$commit_author_email"
+            echo "conflict_email=$commit_author_email" >> $GITHUB_OUTPUT
             echo "Merge conflict detected in the branch 'merge-test'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
             echo "conflict_detected=true" >> $GITHUB_OUTPUT
             echo "conflict_messages=$(cat conflict_message.txt)" >> $GITHUB_OUTPUT
@@ -78,7 +80,7 @@ jobs:
       - name: Display Conflict Message
         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
         run: |
-          echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
+          echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_email }}"
           echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
 
       # - name: Create pull request
@@ -101,9 +103,9 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_email }}"
 
       - uses: wow-actions/auto-assign@v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          assignees: ${{ needs.merge-and-notify.outputs.conflict_author }}
+          assignees: ${{ needs.merge-and-notify.outputs.conflict_email }}

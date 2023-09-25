@@ -50,7 +50,7 @@ jobs:
       - name: Check merge result
         id: step1
         run: |
-          if: failure() && steps.merge-status.outcome != 'success'
+          if: ${{ failure() && steps.merge-status.conclusion == 'failure' }}
           #   git push origin main
           # else
             # Notify the author of the merge conflict and provide instructions

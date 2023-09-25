@@ -52,7 +52,7 @@ jobs:
         id: step1
         run: |
           if: steps.merge-status.outcome == 'failure'
-          continue-on-error: true
+          # continue-on-error: true
           #   git push origin main
           # else
             # Notify the author of the merge conflict and provide instructions

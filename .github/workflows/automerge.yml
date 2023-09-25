@@ -1,4 +1,5 @@
 name: Merge main into feature-develop and Notify Authors
+
 on: 
   push:
     branches:
@@ -25,16 +26,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Attempt to merge merge-test into merge-master
+      - name: Attempt to merge main into feature-develop
         id: merge_result
         run: |
           set -e
           git merge main --no-ff --no-edit --allow-unrelated-histories || echo "Merge failed"
 
-      # - name: Setup Git User
-      #   run: |
-      #     git config user.name "GitHub Action"
-      #     git config user.email "<EMAIL>"
           
       # - name: Merge the PR
       #   id: merge-status
@@ -83,25 +80,25 @@ jobs:
           echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
           echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
 
-      - name: Create pull request
-        if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-        id: cpr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          branch: feature-develop
-          title: "[Automated] Merge main into feature-develop }"
-          assignees: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+      # - name: Create pull request
+      #   if: needs.merge-and-notify.outputs.conflict_detected == 'true'
+      #   id: cpr
+      #   uses: peter-evans/create-pull-request@v5
+      #   with:
+      #     branch: feature-develop
+      #     title: "[Automated] Merge main into feature-develop }"
+      #     assignees: "${{ needs.merge-and-notify.outputs.conflict_author }}"
           
       #https://github.com/marketplace/actions/github-pull-request-action
-      # - name: create pull request
-      #   if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-      #   id: open-pr
-      #   uses: repo-sync/pull-request@v2
-      #   with:
-      #     github_token: ${{secrets.GITHUB_TOKEN}}
-      #     destination_branch: "feature-develop"
-      #     pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
-      #     pr_body: "Automated Pull Request"
+      - name: create pull request
+        if: needs.merge-and-notify.outputs.conflict_detected == 'true'
+        id: open-pr
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          destination_branch: "feature-develop"
+          pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
+          pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 

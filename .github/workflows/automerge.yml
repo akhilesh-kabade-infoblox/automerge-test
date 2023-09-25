@@ -33,6 +33,11 @@ jobs:
       #     set -e
       #     git merge feature-develop --no-ff --no-edit --allow-unrelated-histories || echo "Merge failed"
 
+      - name: Setup Git User
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "<EMAIL>"
+          
       - name: Merge the PR
         id: merge-status
         shell: bash

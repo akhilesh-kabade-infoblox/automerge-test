@@ -67,12 +67,6 @@ jobs:
             echo "conflict_author=$commit_author" >> $GITHUB_OUTPUT
           fi
                 
-      # - name: Set environment variables
-      #   id: init
-      #   # if: steps.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
-      #   run: |
-      #     echo "CONFLICT_DETECTED=true" >> $GITHUB_ENV
-      #     echo "CONFLICT_AUTHOR=$commit_author" >> $GITHUB_ENV
 
   create_pr:
     runs-on: ubuntu-latest
@@ -91,16 +85,25 @@ jobs:
           echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
           echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
 
-      #https://github.com/marketplace/actions/github-pull-request-action
-      - name: create pull request
+      - name: Create pull request
         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-        id: open-pr
-        uses: repo-sync/pull-request@v2
+        uses: devops-infra/action-pull-request@v0.5.5
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          destination_branch: "feature-develop"
-          pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
-          pr_body: "Automated Pull Request"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Merge main into feature-develop branch"
+          body: "**Automated pull request**"
+          assignee: ${{ needs.merge-and-notify.outputs.conflict_author }}
+
+      #https://github.com/marketplace/actions/github-pull-request-action
+      # - name: create pull request
+      #   if: needs.merge-and-notify.outputs.conflict_detected == 'true'
+      #   id: open-pr
+      #   uses: repo-sync/pull-request@v2
+      #   with:
+      #     github_token: ${{secrets.GITHUB_TOKEN}}
+      #     destination_branch: "feature-develop"
+      #     pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
+      #     pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 

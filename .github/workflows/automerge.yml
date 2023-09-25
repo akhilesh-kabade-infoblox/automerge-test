@@ -59,7 +59,7 @@ jobs:
   create_pr:
     runs-on: ubuntu-latest
     needs: merge-and-notify
-    #if: needs.merge-and-notify.outputs.CONFLICT_DETECTED == 'true'
+    if: needs.merge-and-notify.outputs.conflict_detected == 'true'
 
     steps:
       - name: git checkout

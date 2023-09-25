@@ -101,7 +101,7 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 
       - uses: wow-actions/auto-assign@v3
         with:

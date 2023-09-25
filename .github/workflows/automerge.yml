@@ -87,15 +87,13 @@ jobs:
 
       - name: Create pull request
         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-        uses: devops-infra/action-pull-request@v0.5.5
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Merge main into feature-develop branch"
-          body: "**Automated pull request**"
-          assignee: ${{ needs.merge-and-notify.outputs.conflict_author }}
-          source_branch: main
-          target_branch: feature-develop
-
+          branch: feature-develop
+          title: "[Automated] Merge main into feature-develop }"
+          assignees: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          
       #https://github.com/marketplace/actions/github-pull-request-action
       # - name: create pull request
       #   if: needs.merge-and-notify.outputs.conflict_detected == 'true'

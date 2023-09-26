@@ -35,7 +35,7 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "Github Actions"
           git fetch --unshallow
-          git checkout feature-develop
+          git checkout develop
           git pull
           git merge --no-ff main -m "Auto-merge master back to dev"
           git push
@@ -104,7 +104,7 @@ jobs:
         uses: repo-sync/pull-request@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
-          destination_branch: "feature-develop"
+          destination_branch: "develop"
           pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"

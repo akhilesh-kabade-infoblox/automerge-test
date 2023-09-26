@@ -28,11 +28,19 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Attempt to merge main into feature-develop
-        id: merge_result
+      - name: Merge master back to dev
         run: |
-          set -e
-          git merge main --no-ff --no-edit --allow-unrelated-histories || echo "Merge failed"
+          git fetch --unshallow
+          git checkout feature-develop
+          git pull
+          git merge --no-ff main -m "Auto-merge master back to dev"
+          git push
+
+      # - name: Attempt to merge main into feature-develop
+      #   id: merge_result
+      #   run: |
+      #     set -e
+      #     git merge main --no-ff --no-edit --allow-unrelated-histories || echo "Merge failed"
 
           
       # - name: Merge the PR
@@ -96,5 +104,5 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          pr_assignee: "${{ needs.merge-and-notify.outputs.AUTHOR_USERNAME }}"
+          #pr_assignee: "${{ needs.merge-and-notify.outputs.AUTHOR_USERNAME }}"
 

@@ -21,7 +21,7 @@ jobs:
     outputs:
       conflict_detected: ${{ steps.step1.outputs.conflict_detected }}
       conflict_author: ${{ steps.step1.outputs.conflict_author }}
-      # conflict_email: ${{ steps.step1.outputs.conflict_email }}
+      AUTHOR_USERNAME: ${{ steps.step1.outputs.AUTHOR_USERNAME }}
       conflict_messages: ${{ steps.step1.outputs.conflict_messages }}
       
     steps:
@@ -56,6 +56,8 @@ jobs:
             # Notify the author of the merge conflict and provide instructions
             commit_author=$(git --no-pager show -s --format='%an' HEAD)
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
+            AUTHOR_USERNAME=$(curl -s "https://api.github.com/search/users?q=$commit_author_email" | jq -r '.items[0].login')
+            echo "$AUTHOR_USERNAME"
             echo "$commit_author"
             echo "$commit_author_email"
             # echo "conflict_email=$commit_author_email" >> $GITHUB_OUTPUT
@@ -82,15 +84,6 @@ jobs:
         run: |
           echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
           echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
-
-      # - name: Create pull request
-      #   if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-      #   id: cpr
-      #   uses: peter-evans/create-pull-request@v5
-      #   with:
-      #     branch: feature-develop
-      #     title: "[Automated] Merge main into feature-develop }"
-      #     assignees: "${{ needs.merge-and-notify.outputs.conflict_author }}"
           
       #https://github.com/marketplace/actions/github-pull-request-action
       - name: create pull request
@@ -103,9 +96,5 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          pr_assignee: "${{ needs.merge-and-notify.outputs.AUTHOR_USERNAME }}"
 
-      # - uses: wow-actions/auto-assign@v3
-      #   with:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     assignees: ${{ needs.merge-and-notify.outputs.conflict_email }}

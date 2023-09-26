@@ -1,6 +1,5 @@
 name: Merge main into feature-develop and Notify Authors
 
-
 on: 
   push:
     branches:

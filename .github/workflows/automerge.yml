@@ -46,7 +46,7 @@ jobs:
           echo "$commit_author"
           echo "$commit_author_email"
           # echo "conflict_email=$commit_author_email" >> $GITHUB_OUTPUT
-          echo "Merge conflict detected in the branch 'merge-test'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
+          echo "Merge conflict detected in the branch 'develop'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
           echo "conflict_detected=true" >> $GITHUB_OUTPUT
           echo "conflict_messages=$(cat conflict_message.txt)" >> $GITHUB_OUTPUT
           echo "conflict_author=$commit_author" >> $GITHUB_OUTPUT                
@@ -76,7 +76,7 @@ jobs:
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           destination_branch: "develop"
-          pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
+          pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"

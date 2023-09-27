@@ -65,7 +65,8 @@ jobs:
           #   git push origin main
           # else
             # Notify the author of the merge conflict and provide instructions
-            commit_author=$(git --no-pager show -s --format='%an' HEAD)
+            #commit_author=$(git --no-pager show -s --format='%an' HEAD)
+            commit_author=$(git config --global --get user.name)
             commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
             AUTHOR_USERNAME=$(curl -s "https://api.github.com/search/users?q=$commit_author_email" | jq -r '.items[0].login')
             echo "$AUTHOR_USERNAME"
@@ -107,5 +108,5 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into feature-develop }"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          #pr_assignee: "${{ needs.merge-and-notify.outputs.AUTHOR_USERNAME }}"
+          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 

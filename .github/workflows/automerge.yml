@@ -86,9 +86,9 @@ jobs:
         uses: dawidd6/action-send-mail@v3
         with:
           connection_url: ${{secrets.MAIL_CONNECTION}}
-          server_address: smtp.gmail.com
-          server_port: 25
-          secure: false
+          server_address: outlook.office365.com
+          server_port: 443
+          secure: true
           subject: Github Actions job result
           to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
           from: Github Actions

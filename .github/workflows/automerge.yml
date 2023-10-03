@@ -81,16 +81,16 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 
-      - name: Send mail
-        uses: dawidd6/action-send-mail@v3
-        with:
-          connection_url: ${{secrets.MAIL_CONNECTION}}
-          server_address: outlook.office365.com
-          server_port: 465
-          secure: true
-          subject: Github Actions job result
-          to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
-          from: Github Actions
+      # - name: Send mail
+      #   uses: dawidd6/action-send-mail@v3
+      #   with:
+      #     connection_url: ${{secrets.MAIL_CONNECTION}}
+      #     server_address: outlook.office365.com
+      #     server_port: 465
+      #     secure: true
+      #     subject: Github Actions job result
+      #     to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
+      #     from: Github Actions
 

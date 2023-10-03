@@ -91,4 +91,5 @@ jobs:
           secure: true
           subject: Github Actions job result
           to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
+          from: Github Actions
 

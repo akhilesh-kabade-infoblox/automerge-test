@@ -68,7 +68,6 @@ jobs:
         run: |
           echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
           echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
-          git send-email --to="${{ needs.merge-and-notify.outputs.conflict_email }}"
           
       #https://github.com/marketplace/actions/github-pull-request-action
       - name: create pull request
@@ -80,6 +79,11 @@ jobs:
           destination_branch: "develop"
           pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
           pr_body: "Automated Pull Request"
+
+      - uses: act10ns/slack@v2
+        with: 
+          status: ${{ job.status }}
+          if: always()
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 

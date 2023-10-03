@@ -41,7 +41,8 @@ jobs:
         if: steps.merge-status.outcome == 'failure'
         run: |
           # Notify the author of the merge conflict and provide instructions
-          commit_author=$(git --no-pager show -s --format='%an' HEAD)
+          #commit_author=$(git --no-pager show -s --format='%an' HEAD)
+          commit_author=$(git log -1 --pretty=format:'%an')
           commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
           echo "$AUTHOR_USERNAME"
           echo "$commit_author"

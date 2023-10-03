@@ -83,9 +83,7 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          
           pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
-          gh pr create --fill --draft --assignee "$USER_NAME" --head "$BRANCH" || true
 
       # - name: Send mail
       #   uses: dawidd6/action-send-mail@v3

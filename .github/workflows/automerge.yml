@@ -79,11 +79,18 @@ jobs:
           destination_branch: "develop"
           pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
           pr_body: "Automated Pull Request"
-
-      - uses: act10ns/slack@v2
-        with: 
-          status: ${{ job.status }}
-          if: always()
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+
+      - name: Send some mail
+        uses: wadeww/send-email-action@master
+        with:
+          server_address: smtp.gmail.com
+          port: 465
+          username: ${{secrets.MAIL_USERNAME}}
+          password: ${{secrets.MAIL_PASSWORD}}
+          subject: Workflow finished
+          body: Job completed ${{job.status}}
+          to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
+          # from: Me
 

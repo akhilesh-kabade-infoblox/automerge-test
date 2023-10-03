@@ -40,6 +40,8 @@ jobs:
         id: step1
         if: steps.merge-status.outcome == 'failure'
         run: |
+          git config user.name "$USER_NAME"
+          echo "$USER_NAME"
           # Notify the author of the merge conflict and provide instructions
           #commit_author=$(git --no-pager show -s --format='%an' HEAD)
           commit_author=$(git log -1 --pretty=format:'%an')
@@ -81,7 +83,9 @@ jobs:
           pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
           pr_body: "Automated Pull Request"
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
+          
           pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          gh pr create --fill --draft --assignee "$USER_NAME" --head "$BRANCH" || true
 
       # - name: Send mail
       #   uses: dawidd6/action-send-mail@v3

@@ -82,15 +82,13 @@ jobs:
           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
           #pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
 
-      - name: Send some mail
-        uses: wadeww/send-email-action@master
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
         with:
+          connection_url: ${{secrets.MAIL_CONNECTION}}
           server_address: smtp.gmail.com
-          port: 465
-          username: ${{secrets.MAIL_USERNAME}}
-          password: ${{secrets.MAIL_PASSWORD}}
-          subject: Workflow finished
-          body: Job completed ${{job.status}}
+          server_port: 465
+          secure: true
+          subject: Github Actions job result
           to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
-          # from: Me
 

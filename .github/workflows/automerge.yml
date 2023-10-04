@@ -134,4 +134,3 @@ jobs:
 
             **Don't squash merge this PR**
           pr-title: "👾 Merge `master` to `develop`"
-

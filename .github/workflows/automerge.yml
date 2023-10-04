@@ -1,98 +1,137 @@
-name: Merge main into develop branch and Notify Authors
+# name: Merge main into develop branch and Notify Authors
 
-on: 
+# on: 
+#   push:
+#     branches:
+#       - main
+      
+# permissions:
+#   contents: write
+#   pull-requests: write
+#   repository-projects: write
+
+# jobs:
+#   merge-and-notify:
+#     runs-on: ubuntu-latest
+
+#     outputs:
+#       conflict_detected: ${{ steps.step1.outputs.conflict_detected }}
+#       conflict_author: ${{ steps.step1.outputs.conflict_author }}
+#       conflict_email: ${{ steps.step1.outputs.conflict_email }}
+#       conflict_messages: ${{ steps.step1.outputs.conflict_messages }}
+      
+#     steps:
+#       - name: Check out code
+#         uses: actions/checkout@v2
+
+#       - name: Merge main into develop (without conflict)
+#         id: merge-status
+#         continue-on-error: true
+#         run: |
+#           git config --local user.email "actions@github.com"
+#           git config --local user.name "Github Actions"
+#           git fetch --unshallow
+#           git checkout develop
+#           git pull
+#           git merge --no-ff main -m "Auto-merge master back to dev"
+#           git push
+          
+#       - name: Check merge result
+#         id: step1
+#         if: steps.merge-status.outcome == 'failure'
+#         run: |
+#           git config user.name "$USER_NAME"
+#           echo "$USER_NAME"
+#           # Notify the author of the merge conflict and provide instructions
+#           #commit_author=$(git --no-pager show -s --format='%an' HEAD)
+#           commit_author=$(git log -1 --pretty=format:'%an')
+#           commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
+#           echo "$AUTHOR_USERNAME"
+#           echo "$commit_author"
+#           echo "$commit_author_email"
+#           echo "conflict_email=$commit_author_email" >> $GITHUB_OUTPUT
+#           echo "Merge conflict detected in the branch 'develop'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
+#           echo "conflict_detected=true" >> $GITHUB_OUTPUT
+#           echo "conflict_messages=$(cat conflict_message.txt)" >> $GITHUB_OUTPUT
+#           echo "conflict_author=$commit_author" >> $GITHUB_OUTPUT                
+
+#   create_pr:
+#     runs-on: ubuntu-latest
+#     needs: merge-and-notify
+#     if: needs.merge-and-notify.outputs.conflict_detected == 'true'
+
+#     steps:
+#       - name: git checkout
+#         uses: actions/checkout@v3
+#         with:
+#           token: ${{secrets.GITHUB_TOKEN}}
+
+#       - name: Display Conflict Message
+#         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
+#         run: |
+#           echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
+#           echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
+          
+#       #https://github.com/marketplace/actions/github-pull-request-action
+#       - name: create pull request
+#         if: needs.merge-and-notify.outputs.conflict_detected == 'true'
+#         id: open-pr
+#         uses: repo-sync/pull-request@v2
+#         with:
+#           github_token: ${{secrets.GITHUB_TOKEN}}
+#           destination_branch: "develop"
+#           pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
+#           pr_body: "Automated Pull Request"
+#           #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
+#           pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+
+
+
+name: Create pull request from master to develop
+
+on:
   push:
     branches:
       - main
-      
-permissions:
-  contents: write
-  pull-requests: write
-  repository-projects: write
-
 jobs:
-  merge-and-notify:
+  create-master-to-develop-pr:
     runs-on: ubuntu-latest
-
-    outputs:
-      conflict_detected: ${{ steps.step1.outputs.conflict_detected }}
-      conflict_author: ${{ steps.step1.outputs.conflict_author }}
-      conflict_email: ${{ steps.step1.outputs.conflict_email }}
-      conflict_messages: ${{ steps.step1.outputs.conflict_messages }}
-      
+    name: Create pull request from main to develop
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Merge main into develop (without conflict)
-        id: merge-status
-        continue-on-error: true
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "Github Actions"
-          git fetch --unshallow
-          git checkout develop
-          git pull
-          git merge --no-ff main -m "Auto-merge master back to dev"
-          git push
-          
-      - name: Check merge result
-        id: step1
-        if: steps.merge-status.outcome == 'failure'
-        run: |
-          git config user.name "$USER_NAME"
-          echo "$USER_NAME"
-          # Notify the author of the merge conflict and provide instructions
-          #commit_author=$(git --no-pager show -s --format='%an' HEAD)
-          commit_author=$(git log -1 --pretty=format:'%an')
-          commit_author_email=$(git --no-pager show -s --format='%ae' HEAD)
-          echo "$AUTHOR_USERNAME"
-          echo "$commit_author"
-          echo "$commit_author_email"
-          echo "conflict_email=$commit_author_email" >> $GITHUB_OUTPUT
-          echo "Merge conflict detected in the branch 'develop'. Please resolve the conflict and rebase if necessary. Instructions: [Link to conflict resolution guide]. /cc @$commit_author" >> conflict_message.txt
-          echo "conflict_detected=true" >> $GITHUB_OUTPUT
-          echo "conflict_messages=$(cat conflict_message.txt)" >> $GITHUB_OUTPUT
-          echo "conflict_author=$commit_author" >> $GITHUB_OUTPUT                
-
-  create_pr:
-    runs-on: ubuntu-latest
-    needs: merge-and-notify
-    if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-
-    steps:
-      - name: git checkout
-        uses: actions/checkout@v3
+      - name: Detect changes between main and develop
+        id: "detect-changes-between-main-and-develop"
+        uses: fjenik/detect-changes-between-two-branches@0.0.3
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: develop
+          source-branch: main
+      - name: Detect changes output
+        run: echo "Output of detect changes ${{ steps.detect-changes-between-main-and-develop.outputs.is-source-branch-ahead }}"
 
-      - name: Display Conflict Message
-        if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-        run: |
-          echo "Conflict Detected by: ${{ needs.merge-and-notify.outputs.conflict_author }}"
-          echo "Message: ${{ needs.merge-and-notify.outputs.conflict_messages }}"
-          
-      #https://github.com/marketplace/actions/github-pull-request-action
-      - name: create pull request
-        if: needs.merge-and-notify.outputs.conflict_detected == 'true'
-        id: open-pr
-        uses: repo-sync/pull-request@v2
+      - name: Check if pr already exists
+        id: "check-if-pr-already-exists"
+        if: ${{ steps.detect-changes-between-main-and-develop.outputs.is-source-branch-ahead == 'true' }}
+        uses: fjenik/check-if-pr-exists@0.0.3
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          destination_branch: "develop"
-          pr_title: "[Automated] Merge ${{ github.ref_name }} into develop"
-          pr_body: "Automated Pull Request"
-          #pr_reviewer: "${{ env.CONFLICT_AUTHOR }}"
-          pr_assignee: "${{ needs.merge-and-notify.outputs.conflict_author }}"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: develop
+          source-branch: main
 
-      # - name: Send mail
-      #   uses: dawidd6/action-send-mail@v3
-      #   with:
-      #     connection_url: ${{secrets.MAIL_CONNECTION}}
-      #     server_address: outlook.office365.com
-      #     server_port: 465
-      #     secure: true
-      #     subject: Github Actions job result
-      #     to: "${{ needs.merge-and-notify.outputs.conflict_email }}"
-      #     from: Github Actions
+      - name: Print output
+        run: echo "Output of pull request already exists ${{ steps.check-if-pr-already-exists.outputs.is-pr-already-created }}"
+
+      - name: Create pull request
+        if: ${{ steps.check-if-pr-already-exists.outputs.is-pr-already-created == 'false' }}
+        uses: fjenik/create-pull-request@0.0.12
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: develop
+          source-branch: main
+          pr-body: |
+            _This PR was generated via github actions workflow to keep 'develop' always in sync with 'main' branch_
+
+            Please review and merge.
+
+            **Don't squash merge this PR**
+          pr-title: "👾 Merge `master` to `develop`"
 

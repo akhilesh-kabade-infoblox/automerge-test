@@ -44,6 +44,7 @@ jobs:
           type: now
           from_branch: main
           target_branch: develop
+          message: Auto merge main into develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Check merge result

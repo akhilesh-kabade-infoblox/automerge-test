@@ -1,16 +1,25 @@
-name: Merge Article Schedule
+name: automerge
 on:
   pull_request:
     types:
+      - labeled
+      - unlabeled
+      - synchronize
       - opened
       - edited
-
+      - ready_for_review
+      - reopened
+      - unlocked
+  check_suite:
+    types:
+      - completed
+  status: {}
 jobs:
-  merge_schedule:
+  automerge:
     runs-on: ubuntu-latest
     steps:
-      - uses: gr2m/merge-schedule-action@v1
-        with:
-          merge_method: squash
+      - id: automerge
+        name: automerge
+        uses: "pascalgn/automerge-action@v0.15.6"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

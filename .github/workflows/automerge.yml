@@ -1,12 +1,62 @@
-name: Test run v2
+name: manual workflow
 
 on:
   workflow_dispatch:
 
 jobs:
-  test:
+  merge-master-into-develop:
     runs-on: ubuntu-latest
     steps:
-      - name: say hello
-        run: echo "hello"
-      
+     
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        
+      - name: create a pull request and auto-merge conflict-free PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITPAT }}
+        run: |
+          set +e
+          git config user.email "aa2@infoblox.com"
+          git config user.name "akhilesh-kabade-infoblox"
+          
+          git fetch origin
+          
+          if git show-ref --quiet refs/remotes/origin/feature-main
+          then
+            echo "a pull request for branch 'main' into branch 'test' already exists"
+          else
+              git checkout -b main origin/master
+              git push -u origin main
+
+              git checkout test
+              
+              pr_link=$(gh pr create --base test --head main --title "Merge main into test" --body "Automatically generated pull request.")
+            
+              git merge origin/feature-main --no-ff --no-edit --allow-unrelated-histories
+              detect_conflict=$?
+
+              if [[  ${detect_conflict} -eq 0 ]]; then
+                  gh pr merge ${pr_link} -m -t "Merge main into test branch" --admin
+              else
+                  conflicted_files=$(git diff --name-only --diff-filter=U)
+                  for conflicted_file in ${conflicted_files}; do
+                      conflicted_lines=$(awk '/<{7}/{print NR}; /={7}/{print NR}; />{7}/{print NR}' "${conflicted_file}")
+                      IFS=$'\n' # Set Internal Field Separator to newline
+                      lines=(${conflicted_lines}) # Store the lines in an array
+                      for ((i=0; i<${#lines[@]}-1; i++)); do 
+                          echo "${lines[i]} ${lines[i+1]}"
+                          echo "${conflicted_file}"
+                          git blame -e -L "${lines[i]},${lines[i+1]}" "${conflicted_file}" | \
+                          awk '{print $2}' | sed 's/[<>(]//g' | grep -E '@users\.noreply\.github\.com\b|\@infoblox\.com\b' | \
+                          sort --unique | tee -a output.txt
+                      done
+                  done
+                  assignees=$(cat output.txt | sort --unique | grep "users.noreply.github.com" | sed -E 's/^[0-9]+\+(.*)@.*/\1/')
+                  for assignee in ${assignees}; do
+                      gh pr edit ${pr_link} --add-assignee ${assignee}
+                  done
+                  # Emails need the below format; later, extenders can use the variable.
+                  emails=$(grep "@infoblox.com" output.txt | sort --unique | tr '\n' ',' | sed 's/,$//')
+                  echo "${emails}"
+              fi
+          fi  

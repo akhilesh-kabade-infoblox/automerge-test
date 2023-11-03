@@ -13,7 +13,7 @@ jobs:
         
       - name: create a pull request and auto-merge conflict-free PRs
         env:
-          GITHUB_TOKEN: ${{ secrets.GITPAT }}
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         run: |
           set +e
           git config user.email "aa2@infoblox.com"

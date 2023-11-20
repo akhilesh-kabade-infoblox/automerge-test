@@ -1,13 +1,24 @@
-name: Test run v2
-
 on:
   workflow_dispatch:
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: say hello
-        run: gh repo list Infoblox-CTO --limit 1098 | grep ddi | grep -v archived | awk '{print $1}' | sed 's/Infoblox-CTO\///' | grep ^ddi
-        env:
-          GH_TOKEN: ${{ github.token }}
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+      print_tags:
+        description: 'True to print to STDOUT'
+        required: true
+        type: boolean
+      tags:
+        description: 'Test scenario tags'
+        required: true
+        type: string
+      environment:
+        description: 'Environment to run tests against'
+        type: environment
+        required: true

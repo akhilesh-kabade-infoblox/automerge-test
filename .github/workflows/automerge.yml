@@ -1,4 +1,4 @@
-name: Create PR and Handle Conflicts
+name: Create and Merge PR
 
 on:
   push:
@@ -6,63 +6,34 @@ on:
       - main
 
 jobs:
-  create_pr:
+  create_and_merge_pr:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Set up Git
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Create PR
         run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          
           git checkout -b pr-branch
-          git pull
           git push origin pr-branch
-          gh pr create -b develop -h pr-branch -m "Automated PR from master to develop"
-
-  merge_pr:
-    needs: create_pr
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+          
+          # Create PR using GitHub CLI (gh)
+          gh pr create --base develop --head pr-branch --title "Automated PR from master to develop" --body "Automated PR created by GitHub Actions."
 
       - name: Merge PR if no conflicts
         run: |
-          git checkout develop
-          git pull origin develop
-          git merge --no-ff pr-branch || exit 0
+          pr_number=$(gh pr list --base develop --head pr-branch --json number --limit 1 | jq -r '.[0].number')
 
-  handle_conflicts:
-    needs: create_pr
-    if: failure()
-    runs-on: ubuntu-latest
+          # Check for conflicts
+          conflicts=$(gh pr merge $pr_number --squash --auto || echo "conflicts")
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Git
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-      - name: Get conflicting files
-        id: conflict_files
-        run: |
-          git checkout -b pr-branch
-          git push origin pr-branch
-          conflicts=$(git merge develop --no-ff --no-commit 2>&1 | grep 'CONFLICT' | sed -e 's/.*CONFLICT[[:space:]]*\([^ ]*.*\)/\1/')
-
-      - name: Assign PR to conflicting files author
-        run: |
-          for file in ${{ steps.conflict_files.outputs.conflicts }}; do
-            author=$(git blame --show-email $file | grep -m1 -oP '(?<=<).+?(?=>)')
-            gh pr edit ${{ github.event.number }} --add-assignees $author
-          done
+          if [ "$conflicts" != "conflicts" ]; then
+            echo "No conflicts. Merging PR..."
+            gh pr merge $pr_number --squash --auto
+          else
+            echo "Conflicts detected. PR will not be auto-merged."
+          fi

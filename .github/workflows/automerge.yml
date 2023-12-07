@@ -22,7 +22,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git checkout -b automatic-merge-branch
+          git checkout -b automatic-merge-branch origin/main
           git pull
           git push -u origin automatic-merge-branch
           gh pr create --base develop --head automatic-merge-branch --title "Automatic PR from master to develop" --body "Automated PR created by GitHub Actions."

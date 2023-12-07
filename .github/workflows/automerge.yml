@@ -22,14 +22,15 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git checkout -b automatic-merge-branch origin/main
+          timestamp=$(date +%s)
+          git checkout -b automatic-${timestamp} origin/main
           git pull
-          git push -u origin automatic-merge-branch
-          gh pr create --base develop --head automatic-merge-branch --title "Automatic PR from master to develop" --body "Automated PR created by GitHub Actions."
+          git push -u origin automatic-${timestamp}
+          gh pr create --base develop --head automatic-${timestamp} --title "Automatic PR from master to develop" --body "Automated PR created by GitHub Actions."
 
       - name: Merge PR
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          pr_number=$(gh pr list --base develop --head automatic-merge-branch --json number --limit 1 | jq -r '.[0].number')
+          pr_number=$(gh pr list --base develop --head automatic-${timestamp} --json number --limit 1 | jq -r '.[0].number')
           gh pr merge $pr_number --squash --auto

@@ -21,7 +21,7 @@ jobs:
       - name: Create PR
         run: |
           git checkout -b pr-branch
-          git pull origin pr-branch
+          git pull
           git push origin pr-branch
           gh pr create -b develop -h pr-branch -m "Automated PR from master to develop"
 

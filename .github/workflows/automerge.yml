@@ -23,7 +23,7 @@ jobs:
           
           git fetch origin
           git checkout -b pr-branch origin/main
-          #git pull --rebase origin pr-branch
+          git pull origin pr-branch
           git push -u origin pr-branch
           
           # Create PR using GitHub CLI (gh)

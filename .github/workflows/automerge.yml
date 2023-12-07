@@ -22,7 +22,7 @@ jobs:
           
           git checkout -b pr-branch
           git pull --rebase origin pr-branch
-          git push origin pr-branch
+          git push -u origin pr-branch
           
           # Create PR using GitHub CLI (gh)
           gh pr create --base develop --head pr-branch --title "Automated PR from master to develop" --body "Automated PR created by GitHub Actions."

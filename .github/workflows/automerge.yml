@@ -22,7 +22,7 @@ jobs:
         run: |
           git checkout -b pr-branch
           git push origin pr-branch
-          hub pull-request -b develop -h pr-branch -m "Automated PR from master to develop"
+          gh pr create -b develop -h pr-branch -m "Automated PR from master to develop"
 
   merge_pr:
     needs: create_pr

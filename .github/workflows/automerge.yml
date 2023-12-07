@@ -1,4 +1,4 @@
-name: Create and Merge PR
+name: Automatic Merge
 
 on:
   push:
@@ -6,37 +6,30 @@ on:
       - main
 
 jobs:
-  create_and_merge_pr:
+  merge:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Git
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
       - name: Create PR
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          
-          git checkout -b pr-branch
-          git pull --rebase origin pr-branch
-          git push -u origin pr-branch
-          
-          # Create PR using GitHub CLI (gh)
-          gh pr create --base develop --head pr-branch --title "Automated PR from master to develop" --body "Automated PR created by GitHub Actions."
+          git checkout -b automatic-merge-branch origin/main
+          git pull
+          git push -u origin automatic-merge-branch
+          gh pr create --base develop --head automatic-merge-branch --title "Automatic PR from master to develop" --body "Automated PR created by GitHub Actions."
 
-      - name: Merge PR if no conflicts
+      - name: Merge PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          pr_number=$(gh pr list --base develop --head pr-branch --json number --limit 1 | jq -r '.[0].number')
-
-          # Check for conflicts
-          conflicts=$(gh pr merge $pr_number --squash --auto || echo "conflicts")
-
-          if [ "$conflicts" != "conflicts" ]; then
-            echo "No conflicts. Merging PR..."
-            gh pr merge $pr_number --squash --auto
-          else
-            echo "Conflicts detected. PR will not be auto-merged."
-          fi
+          pr_number=$(gh pr list --base develop --head automatic-merge-branch --json number --limit 1 | jq -r '.[0].number')
+          gh pr merge $pr_number --squash --auto

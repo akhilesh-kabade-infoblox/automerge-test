@@ -32,8 +32,8 @@ jobs:
       - name: Approve and Merge PR
         run: |
           if [[ $RESULT == "true" ]]; then
-          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
-          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
+          #PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }}"
 
           # Approve the PR
           curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'

@@ -13,19 +13,19 @@ jobs:
     steps:
       - name: Check Pull Request Branches
         run: |
-          PR_BASE_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.base.ref')
-          PR_HEAD_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.head.ref') 
+          # PR_BASE_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.base.ref')
+          # PR_HEAD_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.head.ref') 
+          # echo "${PR_BASE_BRANCH}"
+          # echo "${PR_HEAD_BRANCH}"
+
+
+          # echo "=============="
+
+
+          PR_BASE_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+          PR_HEAD_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
           echo "${PR_BASE_BRANCH}"
           echo "${PR_HEAD_BRANCH}"
-
-
-          echo "=============="
-
-
-          TARGET_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
-          SOURCE_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
-          echo "${TARGET_BRANCH}"
-          echo "${SOURCE_BRANCH}"
 
           if [ "$PR_BASE_BRANCH" = "develop" ] && [ "$PR_HEAD_BRANCH" = "main" ]; then
             echo "This is a pull request from master to develop."
@@ -41,8 +41,8 @@ jobs:
       - name: Approve and Merge PR
         run: |
           if [[ $RESULT == "true" ]]; then
-          #PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
-          API_URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }}"
+          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
 
           # Approve the PR
           curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'

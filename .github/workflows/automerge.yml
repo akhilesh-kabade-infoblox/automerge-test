@@ -1,34 +1,41 @@
-name: Auto Merge
+name: Auto Merge PRs from master to develop
 
 on:
   pull_request:
-    branches:
-      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
-  auto-merge:
+  auto_merge:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Auto merge to develop
-      run: |
-        # Ensure the base branch is 'develop'
-        if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
-          BASE_BRANCH=$(jq -r ".pull_request.base.ref" "$GITHUB_EVENT_PATH")
-          if [ "$BASE_BRANCH" != "develop" ]; then
-            echo "Not merging to develop branch."
+      - name: Check if PR is from master to develop
+        run: |
+          SOURCE_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
+          TARGET_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+
+          if [[ "$SOURCE_BRANCH" == "main" && "$TARGET_BRANCH" == "develop" ]]; then
+            echo "PR is from master to develop. Proceeding with approval and merge."
+          else
+            echo "PR is not from master to develop. Exiting."
             exit 0
           fi
-        fi
 
-        # Auto-approve and merge
-        PR_NUMBER=$(jq -r ".pull_request.number" "$GITHUB_EVENT_PATH")
-        REPO_TOKEN=${{ secrets.GITHUB_TOKEN }}
-        GITHUB_API="https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/merge"
-        curl -X PUT -H "Authorization: token $REPO_TOKEN" "$GITHUB_API"
+      - name: Approve and Merge PR
+        run: |
+          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Your logic to check other conditions if needed
+
+          # Approve the PR
+          curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'
+
+          # Merge the PR
+          curl -X PUT -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/merge"

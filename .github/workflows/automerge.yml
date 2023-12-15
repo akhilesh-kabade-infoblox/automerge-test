@@ -12,25 +12,3 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-      - name: Set up Git
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
-      - name: Create PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          timestamp=$(date +%s)
-          git checkout -b automatic-${timestamp} origin/main
-          git pull
-          git push -u origin automatic-${timestamp}
-          gh pr create --base develop --head automatic-${timestamp} --title "Automatic PR from master to develop" --body "Automated PR created by GitHub Actions."
-
-      - name: Merge PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          pr_number=$(gh pr list --base develop --head automatic-${timestamp} --json number --limit 1 | jq -r '.[0].number')
-          gh pr merge $pr_number --squash --auto

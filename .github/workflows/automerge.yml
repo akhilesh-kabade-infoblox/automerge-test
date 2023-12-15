@@ -18,7 +18,7 @@ jobs:
           echo "${PR_BASE_BRANCH}"
           echo "${PR_HEAD_BRANCH}"
 
-          if [ "$PR_BASE_BRANCH" = "develop" ] && [ "$PR_HEAD_BRANCH" = "master" ]; then
+          if [ "$PR_BASE_BRANCH" = "develop" ] && [ "$PR_HEAD_BRANCH" = "main" ]; then
             echo "This is a pull request from master to develop."
           else
             echo "This is not a pull request from master to develop."

@@ -20,7 +20,7 @@ jobs:
           SOURCE_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
           TARGET_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
 
-          if [[ "$SOURCE_BRANCH" == "master" && "$TARGET_BRANCH" == "develop" ]]; then
+          if [[ "$SOURCE_BRANCH" == "main" && "$TARGET_BRANCH" == "develop" ]]; then
             echo "PR is from master to develop. Proceeding with approval and merge."
           else
             echo "PR is not from master to develop. Exiting."

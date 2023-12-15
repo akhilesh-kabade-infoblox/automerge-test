@@ -19,7 +19,7 @@ jobs:
           echo "${PR_HEAD_BRANCH}"
 
 
-          echo"=============="
+          echo "=============="
 
 
           TARGET_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")

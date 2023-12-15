@@ -20,7 +20,23 @@ jobs:
 
           if [ "$PR_BASE_BRANCH" = "develop" ] && [ "$PR_HEAD_BRANCH" = "main" ]; then
             echo "This is a pull request from master to develop."
+            RESULT="true"
           else
             echo "This is not a pull request from master to develop."
             exit 1
+            RESULT="false"
           fi
+
+          echo "RESULT=${RESULT}" >> $GITHUB_ENV
+
+      - name: Approve and Merge PR
+        run: |
+          if [[ $RESULT == "true" ]]; then
+          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
+
+          # Approve the PR
+          curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'
+
+          # Merge the PR
+          curl -X PUT -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/merge"

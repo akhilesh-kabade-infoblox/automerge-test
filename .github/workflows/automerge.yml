@@ -23,3 +23,4 @@ jobs:
           else
             echo "This is not a pull request from master to develop."
             exit 1
+          fi

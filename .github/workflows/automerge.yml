@@ -1,36 +1,34 @@
-name: Automatic Merge
+name: Auto Merge
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 
 jobs:
-  merge:
+  auto-merge:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Git
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+    - name: Auto merge to develop
+      run: |
+        # Ensure the base branch is 'develop'
+        if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+          BASE_BRANCH=$(jq -r ".pull_request.base.ref" "$GITHUB_EVENT_PATH")
+          if [ "$BASE_BRANCH" != "develop" ]; then
+            echo "Not merging to develop branch."
+            exit 0
+          fi
+        fi
 
-      - name: Create PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          timestamp=$(date +%s)
-          git checkout -b automatic-${timestamp} origin/main
-          git pull
-          git push -u origin automatic-${timestamp}
-          gh pr create --base develop --head automatic-${timestamp} --title "Automatic PR from master to develop" --body "Automated PR created by GitHub Actions."
+        # Auto-approve and merge
+        PR_NUMBER=$(jq -r ".pull_request.number" "$GITHUB_EVENT_PATH")
+        REPO_TOKEN=${{ secrets.GITHUB_TOKEN }}
+        GITHUB_API="https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/merge"
+        curl -X PUT -H "Authorization: token $REPO_TOKEN" "$GITHUB_API"
 
-      - name: Merge PR
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          pr_number=$(gh pr list --base develop --head automatic-${timestamp} --json number --limit 1 | jq -r '.[0].number')
-          gh pr merge $pr_number --squash --auto
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

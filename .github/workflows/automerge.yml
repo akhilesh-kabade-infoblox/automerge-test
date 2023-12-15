@@ -1,42 +1,53 @@
-name: Auto Merge PR from master to develop
+name: Check Pull Request
 
 on:
   pull_request:
     types:
       - opened
       - synchronize
-      - reopened
 
 jobs:
-  auto_merge:
+  check_pull_request:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Check if PR is from master to develop
+      - name: Check Pull Request Branches
         run: |
-          SOURCE_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
-          TARGET_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+          # PR_BASE_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.base.ref')
+          # PR_HEAD_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.head.ref') 
+          # echo "${PR_BASE_BRANCH}"
+          # echo "${PR_HEAD_BRANCH}"
 
-          if [[ "$SOURCE_BRANCH" == "develop" && "$TARGET_BRANCH" == "master" ]]; then
-            echo "PR is not from master to develop. Exiting."
-            exit 0
+
+          # echo "=============="
+
+
+          PR_BASE_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
+          PR_HEAD_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
+          echo "${PR_BASE_BRANCH}"
+          echo "${PR_HEAD_BRANCH}"
+
+          if [ "$PR_BASE_BRANCH" = "develop" ] && [ "$PR_HEAD_BRANCH" = "main" ]; then
+            echo "This is a pull request from master to develop."
+            RESULT="true"
           else
-            echo "PR is from master to develop. Proceeding with approval and merge."
+            echo "This is not a pull request from master to develop."
+            exit 1
+            RESULT="false"
           fi
+
+          echo "RESULT=${RESULT}" >> $GITHUB_ENV
 
       - name: Approve and Merge PR
         run: |
-          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
-          API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
+          if [[ $RESULT == "true" ]]; then
+            PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+            API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
 
-          # Approve the PR
-          curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'
+            # Approve the PR
+            curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'
 
-          # Wait for a few seconds (optional, to allow approval to register)
-          sleep 5
-
-          # Merge the PR
-          curl -X PUT -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/merge"
+            # Merge the PR
+            curl -X PUT -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/merge"
+          fi
+          

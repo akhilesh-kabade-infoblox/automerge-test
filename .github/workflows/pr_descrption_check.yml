@@ -19,7 +19,8 @@ jobs:
         run: |
           pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
           pr_description=$(gh pr view $pr_number --json body --template '{{.body}}' | tr -d '[:space:]')
-
+          echo "$pr_number"
+          echo "$pr_description"
           if [ -z "$pr_description" ]; then
             echo "PR description is required. Please provide a description."
             exit 1

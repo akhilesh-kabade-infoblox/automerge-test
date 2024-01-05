@@ -1,53 +1,28 @@
-name: Check Pull Request
+name: PR Description Check
 
 on:
   pull_request:
     types:
       - opened
       - synchronize
+      - reopened
 
 jobs:
-  check_pull_request:
+  pr-description-check:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check Pull Request Branches
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Check PR description
         run: |
-          # PR_BASE_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.base.ref')
-          # PR_HEAD_BRANCH=$(curl -sSL https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r '.head.ref') 
-          # echo "${PR_BASE_BRANCH}"
-          # echo "${PR_HEAD_BRANCH}"
+          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          pr_description=$(gh pr view $pr_number --json body --template '{{.body}}' | tr -d '[:space:]')
 
-
-          # echo "=============="
-
-
-          PR_BASE_BRANCH=$(jq -r .pull_request.base.ref "$GITHUB_EVENT_PATH")
-          PR_HEAD_BRANCH=$(jq -r .pull_request.head.ref "$GITHUB_EVENT_PATH")
-          echo "${PR_BASE_BRANCH}"
-          echo "${PR_HEAD_BRANCH}"
-
-          if [ "$PR_BASE_BRANCH" = "develop" ] && [ "$PR_HEAD_BRANCH" = "main" ]; then
-            echo "This is a pull request from master to develop."
-            RESULT="true"
-          else
-            echo "This is not a pull request from master to develop."
+          if [ -z "$pr_description" ]; then
+            echo "PR description is required. Please provide a description."
             exit 1
-            RESULT="false"
+          else
+            echo "PR description is present."
           fi
-
-          echo "RESULT=${RESULT}" >> $GITHUB_ENV
-
-      - name: Approve and Merge PR
-        run: |
-          if [[ $RESULT == "true" ]]; then
-            PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
-            API_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}"
-
-            # Approve the PR
-            curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/reviews" -d '{"event": "APPROVE"}'
-
-            # Merge the PR
-            curl -X PUT -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$API_URL/merge"
-          fi
-          

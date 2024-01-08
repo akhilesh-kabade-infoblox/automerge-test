@@ -28,9 +28,9 @@ jobs:
         echo "========="
         echo "$pr_description"
         
-        if [[ "$pr_description" != "$template" ]]; then
-          echo "PR description does not match the template."
+        if [[ "$pr_description" == "$template" ]]; then
+          echo "PR description is valid."
           exit 1
         else
-          echo "PR description is valid."
+          echo "PR description is not valid."
         fi

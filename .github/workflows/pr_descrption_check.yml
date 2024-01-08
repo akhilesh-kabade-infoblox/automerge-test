@@ -25,7 +25,7 @@ jobs:
         template=$(cat "$template_file")
         pr_description=$(jq -r .pull_request.body "$pr_description_file")
               
-        if [[ $pr_description != *"$template"* ]]; then
+        if [[ *"$pr_description"* != *"$template"* ]]; then
           echo "PR description is not valid."
           diff=$(diff -u <(echo "$template") <(echo "$pr_description"))
           echo "Differences:"

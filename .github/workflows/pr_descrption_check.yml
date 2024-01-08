@@ -1,20 +1,32 @@
-name: 'PR description checker'
+name: PR Description Validation
+
 on:
   pull_request:
     types:
       - opened
-      - edited
-      - reopened
-      - labeled
-      - unlabeled
+      - synchronize
 
 jobs:
-  check-pr-description:
+  validate-pr-description:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      
     steps:
-      - uses: actions/checkout@v2
-      - uses: jadrol/pr-description-checker-action@v1.0.0
-        id: description-checker
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          template-path: ".github/workflows/pull_request_template.md"
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Validate PR description
+      run: |
+        template_file=".github/workflows/pull_request_template.md"
+        pr_description_file="$GITHUB_EVENT_PATH"
+        
+        template=$(cat "$template_file")
+        pr_description=$(jq -r .pull_request.body "$pr_description_file")
+        
+        if [[ $pr_description != *"$template"* ]]; then
+          echo "PR description does not match the template."
+          exit 1
+        else
+          echo "PR description is valid."
+        fi

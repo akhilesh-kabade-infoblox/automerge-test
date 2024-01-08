@@ -29,8 +29,8 @@ jobs:
         echo "$pr_description"
         
         if [[ "$pr_description" != "$template" ]]; then
-          echo "PR description is valid."
+          echo "PR description is not valid."
           exit 1
         else
-          echo "PR description is not valid."
+          echo "PR description is valid."
         fi

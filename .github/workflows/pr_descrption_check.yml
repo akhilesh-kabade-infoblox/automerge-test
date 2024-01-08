@@ -23,7 +23,7 @@ jobs:
           pr_template=$(<.github/workflows/pull_request_template.md)
           echo "$pr_description"
           echo "$pr_template"
-          if [[ ! "$pr_description" =~ "$pr_template" ]]; then
+          if [[ "$pr_description" != "$pr_template" ]]; then
             echo "PR description does not match the template. Please follow the template provided."
             exit 1
           fi

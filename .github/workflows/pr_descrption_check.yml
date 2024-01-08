@@ -1,15 +1,14 @@
-# .github/workflows/pr_description_check.yml
-
-name: PR Description Check
+name: Check PR Description
 
 on:
   pull_request:
     types:
       - opened
       - synchronize
+      - edited
 
 jobs:
-  check-pr-description:
+  check_pr_description:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -18,18 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Read PR description template
-        id: template
-        run: echo "::set-output name=template::$(cat .github/pull_request_template.md)"
-
-      - name: Read PR description
-        id: pr
-        run: echo "::set-output name=description::$(cat $GITHUB_EVENT_PATH | jq -r .pull_request.body)"
-
-      - name: Check PR description against template
+      - name: Check PR Description
         run: |
-          if [[ "${{ steps.pr.outputs.description }}" != "${{ steps.template.outputs.template }}" ]]; then
-            echo "PR description does not match the template in pull_request_template.md."
+          pr_description=$(curl -sL "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }}" | jq -r .body)
+          pr_template=$(<.github/pull_request_template.md)
+
+          if [[ ! "$pr_description" =~ "$pr_template" ]]; then
+            echo "PR description does not match the template. Please follow the template provided."
             exit 1
           fi
-        shell: bash

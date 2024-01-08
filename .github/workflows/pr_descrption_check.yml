@@ -30,7 +30,7 @@ jobs:
           diff=$(diff -u <(echo "$template") <(echo "$pr_description"))
           echo "Differences:"
           echo "$diff"
-          
+          exit 1
         else
           echo "PR description is valid."
         fi

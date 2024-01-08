@@ -17,4 +17,4 @@ jobs:
         id: description-checker
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          exempt-labels: no qa
+          template-path: "./.github/workflows/pull_request_template.md"

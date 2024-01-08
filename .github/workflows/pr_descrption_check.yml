@@ -1,33 +1,38 @@
-name: PR Description Check
+name: Check PR Template Content
 
 on:
   pull_request:
     types:
       - opened
       - synchronize
-      - edited
 
 jobs:
-  check:
+  check-pr-template:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Check PR description
-        run: |
-          template_path=".github/workflows/pull_request_template.md"
-          pr_description=$(cat "$GITHUB_EVENT_PATH" | jq -r .pull_request.body)
-          
-          if [ -z "$pr_description" ]; then
-            echo "PR description is empty. Please provide a description."
-            exit 1
-          fi
+    - name: Read PR template content
+      id: read-template
+      run: |
+        PR_TEMPLATE_PATH=".github/workflows/pull_request_template.md"  # Adjust the path to your PR template file
+        if [ -f "$PR_TEMPLATE_PATH" ]; then
+          PR_TEMPLATE_CONTENT=$(cat "$PR_TEMPLATE_PATH")
+          echo "::set-output name=pr_template_content::$PR_TEMPLATE_CONTENT"
+        else
+          echo "::set-output name=pr_template_content::"
+        fi
 
-          if ! grep -qF "$(cat "$template_path")" <<< "$pr_description"; then
-            echo "PR description does not contain the template content."
-            exit 1
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Check PR description against template content
+      run: |
+        PR_DESCRIPTION=$(jq -r .pull_request.body "$GITHUB_EVENT_PATH")
+        PR_TEMPLATE_CONTENT="${{ steps.read-template.outputs.pr_template_content }}"
+
+        if [[ "$PR_DESCRIPTION" == *"$PR_TEMPLATE_CONTENT"* ]]; then
+          echo "PR template content is present in the PR description."
+        else
+          echo "PR template content is not present in the PR description."
+          exit 1
+        fi

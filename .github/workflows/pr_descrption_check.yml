@@ -1,4 +1,4 @@
-name: PR Description Validation
+name: Check PR Description
 
 on:
   pull_request:
@@ -8,29 +8,28 @@ on:
       - edited
 
 jobs:
-  validate-pr-description:
+  check_pr_description:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
 
-    - name: Validate PR description
-      run: |
-        template_file=".github/workflows/pull_request_template.md"
-        pr_description_file="$GITHUB_EVENT_PATH"
-        
-        template=$(cat "$template_file")
-        pr_description=$(jq -r .pull_request.body "$pr_description_file")
-              
-        if [[ *"$pr_description"* != *"$template"* ]]; then
-          echo "PR description is not valid."
-          diff=$(diff -u <(echo "$template") <(echo "$pr_description"))
-          echo "Differences:"
-          echo "$diff"
-          exit 1
-        else
-          echo "PR description is valid."
-        fi
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Read PR Description
+        id: pr
+        run: echo "::set-output name=description::$(curl -s -H \"Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}\" ${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r .body)"
+
+      - name: Read Template
+        id: template
+        run: echo "::set-output name=template::$(< .github/workflows/pull_request_template.md)"
+
+      - name: Compare PR Description with Template
+        run: |
+          if [ "${{ steps.pr.outputs.description }}" != "${{ steps.template.outputs.template }}" ]; then
+            echo "PR description does not match the template."
+            exit 1
+          else
+            echo "PR description matches the template."
+          fi

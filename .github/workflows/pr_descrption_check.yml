@@ -1,29 +1,20 @@
-name: Check PR Description
-
+name: 'PR description checker'
 on:
   pull_request:
     types:
       - opened
-      - synchronize
       - edited
+      - reopened
+      - labeled
+      - unlabeled
 
 jobs:
-  check_pr_description:
+  check-pr-description:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Check PR Description
-        run: |
-          pr_description=$(curl -sL "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }}" | jq -r .body)
-          pr_template=$(<.github/workflows/pull_request_template.md)
-          echo "$pr_description"
-          echo "$pr_template"
-          if [[ "$pr_description" != "$pr_template" ]]; then
-            echo "PR description does not match the template. Please follow the template provided."
-            exit 1
-          fi
+      - uses: actions/checkout@v2
+      - uses: jadrol/pr-description-checker-action@v1.0.0
+        id: description-checker
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          exempt-labels: no qa

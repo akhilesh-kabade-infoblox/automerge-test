@@ -19,8 +19,7 @@ jobs:
 
       - name: Read PR Description
         id: pr
-        run: echo "::set-output name=description::$(curl -s -H \"Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}\" ${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.number }} | jq -r .body)"
-
+        run: echo "::set-output name=description::${{ github.event.pull_request.body }}"
       - name: Read Template
         id: template
         run: echo "::set-output name=template::$(< .github/workflows/pull_request_template.md)"

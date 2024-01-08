@@ -25,7 +25,7 @@ jobs:
         template=$(cat "$template_file")
         pr_description=$(jq -r .pull_request.body "$pr_description_file")
               
-        if [ "$pr_description" = "$template" ]; then
+        if [ "$template" = "$pr_description" ]; then
           echo "PR description is valid."
         else
           echo "PR description is not valid."

@@ -1,34 +1,32 @@
-name: Check PR Description
+name: PR Description Check
 
 on:
   pull_request:
     types:
       - opened
       - synchronize
-      - edited
 
 jobs:
-  check_pr_description:
+  check:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Read PR Description
-        id: pr
-        run: echo "::set-output name=description::${{ github.event.pull_request.body }}"
-      - name: Read Template
-        id: template
-        run: echo "::set-output name=template::$(< .github/workflows/pull_request_template.md)"
-
-      - name: Compare PR Description with Template
+      - name: Check PR description
         run: |
-          if [ "${{ steps.pr.outputs.description }}" != "${{ steps.template.outputs.template }}" ]; then
-            echo "PR description does not match the template."
+          template_path=".github/workflows/pull_request_template.md"
+          pr_description=$(cat "$GITHUB_EVENT_PATH" | jq -r .pull_request.body)
+          
+          if [ -z "$pr_description" ]; then
+            echo "PR description is empty. Please provide a description."
             exit 1
-          else
-            echo "PR description matches the template."
           fi
+
+          if ! grep -qF "$(cat "$template_path")" <<< "$pr_description"; then
+            echo "PR description does not contain the template content."
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

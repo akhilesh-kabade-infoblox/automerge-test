@@ -20,7 +20,7 @@ jobs:
       - name: Check PR Description
         run: |
           pr_description=$(curl -sL "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.pull_request.number }}" | jq -r .body)
-          pr_template=$(<.github/pull_request_template.md)
+          pr_template=$(<.github/workflows/pull_request_template.md)
 
           if [[ ! "$pr_description" =~ "$pr_template" ]]; then
             echo "PR description does not match the template. Please follow the template provided."

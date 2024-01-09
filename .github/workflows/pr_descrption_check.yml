@@ -1,4 +1,4 @@
-name: PR Description Validation
+name: Validate PR Description
 
 on:
   pull_request:
@@ -8,23 +8,23 @@ on:
       - edited
 
 jobs:
-  pr-validation:
+  validate-description:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Validate PR Description
         run: |
-          templateFile=".github/workflows/pull_request_template.md"
-          prDescription="$(cat $GITHUB_EVENT_PATH | jq -r '.pull_request.body')"
-          templateContent="$(cat $templateFile)"
+          PR_TEMPLATE_PATH=".github/workflows/pull_request_template.md"
+          PR_DESCRIPTION=$(cat "$PR_TEMPLATE_PATH")
+          PR_DESC=$(jq -R -s '.' "$GITHUB_EVENT_PATH".pull_request.body)
 
-          # Check for partial match with the template
-          if echo "$prDescription" | grep -qF "$templateContent"; then
-            echo "PR description partially matches the template."
-          else
-            echo "Invalid PR description. Please include some of the template content in your description."
+          if [ "$PR_DESC" != "$PR_DESCRIPTION" ]; then
+            echo "error: Pull request description does not match the template."
+            echo "Please follow the pull request template at $PR_TEMPLATE_PATH"
             exit 1
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -19,7 +19,7 @@ jobs:
         run: |
           PR_TEMPLATE_PATH=".github/workflows/pull_request_template.md"
           PR_DESCRIPTION=$(cat "$PR_TEMPLATE_PATH")
-          PR_DESC=$(jq -R -s '.' "$GITHUB_EVENT_PATH".pull_request.body)
+          PR_DESC=$(cat "$GITHUB_EVENT_PATH" | jq -r .pull_request.body)
 
           if [ "$PR_DESC" != "$PR_DESCRIPTION" ]; then
             echo "error: Pull request description does not match the template."

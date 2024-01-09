@@ -1,4 +1,4 @@
-name: Check PR Template Content
+name: PR Description Validation
 
 on:
   pull_request:
@@ -8,32 +8,23 @@ on:
       - edited
 
 jobs:
-  check-pr-template:
+  pr-validation:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Read PR template content
-      id: read-template
-      run: |
-        PR_TEMPLATE_PATH=".github/workflows/pull_request_template.md"  # Adjust the path to your PR template file
-        if [ -f "$PR_TEMPLATE_PATH" ]; then
-          PR_TEMPLATE_CONTENT=$(cat "$PR_TEMPLATE_PATH")
-          echo "::set-output name=pr_template_content::$PR_TEMPLATE_CONTENT"
-        else
-          echo "::set-output name=pr_template_content::"
-        fi
+      - name: Validate PR Description
+        run: |
+          templateFile=".github/workflows/pull_request_template.md"
+          prDescription="$(cat $GITHUB_EVENT_PATH | jq -r '.pull_request.body')"
+          templateContent="$(cat $templateFile)"
 
-    - name: Check PR description against template content
-      run: |
-        PR_DESCRIPTION=$(jq -r .pull_request.body "$GITHUB_EVENT_PATH")
-        PR_TEMPLATE_CONTENT="${{ steps.read-template.outputs.pr_template_content }}"
-
-        if [[ "$PR_DESCRIPTION" == *"$PR_TEMPLATE_CONTENT"* ]]; then
-          echo "PR template content is present in the PR description."
-        else
-          echo "PR template content is not present in the PR description."
-          exit 1
-        fi
+          # Check for partial match with the template
+          if echo "$prDescription" | grep -qF "$templateContent"; then
+            echo "PR description partially matches the template."
+          else
+            echo "Invalid PR description. Please include some of the template content in your description."
+            exit 1
+          fi
